@@ -1,9 +1,17 @@
-export type CrosshairStyle = 'dot' | 'cross' | 'tcross' | 'circle'
+export type CrosshairStyle =
+  | 'dot'
+  | 'cross'
+  | 'tcross'
+  | 'circle'
+  | 'x'
+  | 'dot-circle'
+  | 'cross-dot'
+  | 'chevron'
 
 export interface CrosshairConfig {
   visible: boolean
   style: CrosshairStyle
-  /** Длина луча / диаметр точки, px */
+  /** Длина луча / диаметр точки / радиус круга, px */
   size: number
   /** Толщина линий, px */
   thickness: number
@@ -18,6 +26,12 @@ export interface CrosshairConfig {
     color: string
     /** px */
     width: number
+  }
+  shadow: {
+    enabled: boolean
+    /** px */
+    blur: number
+    color: string
   }
   /** Смещение от центра экрана, px */
   offset: {
@@ -38,6 +52,11 @@ export const DEFAULT_CONFIG: CrosshairConfig = {
     enabled: true,
     color: '#000000',
     width: 1
+  },
+  shadow: {
+    enabled: true,
+    blur: 2,
+    color: '#000000'
   },
   offset: { x: 0, y: 0 }
 }

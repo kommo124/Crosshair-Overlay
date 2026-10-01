@@ -43,6 +43,10 @@ export function SettingsApp(): JSX.Element | null {
           <option value="dot">Точка</option>
           <option value="tcross">T-крест</option>
           <option value="circle">Круг</option>
+          <option value="x">X</option>
+          <option value="dot-circle">Точка + круг</option>
+          <option value="cross-dot">Крест + точка</option>
+          <option value="chevron">Chevron</option>
         </select>
       </label>
 
@@ -80,12 +84,46 @@ export function SettingsApp(): JSX.Element | null {
       </label>
 
       <label>
+        Прозрачность
+        <input
+          type="range"
+          min={0.1}
+          max={1}
+          step={0.05}
+          value={config.opacity}
+          onChange={(e) => update({ opacity: Number(e.target.value) })}
+        />
+      </label>
+
+      <label>
         Цвет
         <input
           type="color"
           value={config.color}
           onChange={(e) => update({ color: e.target.value })}
         />
+      </label>
+
+      <label className="checkbox">
+        <input
+          type="checkbox"
+          checked={config.outline.enabled}
+          onChange={(e) =>
+            update({ outline: { ...config.outline, enabled: e.target.checked } })
+          }
+        />
+        Обводка
+      </label>
+
+      <label className="checkbox">
+        <input
+          type="checkbox"
+          checked={config.shadow.enabled}
+          onChange={(e) =>
+            update({ shadow: { ...config.shadow, enabled: e.target.checked } })
+          }
+        />
+        Тень
       </label>
 
       <label className="checkbox">

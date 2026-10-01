@@ -1,24 +1,95 @@
 import type { CrosshairConfig } from '@shared/config'
 
 const BOX = 200
+const DIAG = Math.SQRT1_2
 
 interface CrosshairProps {
   config: CrosshairConfig
 }
 
-export function Crosshair({ config }: CrosshairProps): JSX.Element {
-  const { style, size, thickness, gap, color, opacity, outline, offset } = config
-  const c = BOX / 2
-  const outlineWidth = thickness + outline.width * 2
+type Line = [number, number, number, number]
 
-  const arms: Array<[number, number, number, number]> = []
-  if (style === 'cross' || style === 'tcross') {
-    arms.push([c, c - gap - size, c, c - gap])
-    arms.push([c, c + gap, c, c + gap + size])
-    arms.push([c - gap - size, c, c - gap, c])
-    arms.push([c + gap, c, c + gap + size, c])
-    if (style === 'tcross') arms.shift()
+interface Circle {
+  cx: number
+  cy: number
+  r: number
+  filled: boolean
+}
+
+interface Geometry {
+  lines: Line[]
+  circles: Circle[]
+}
+
+function geometry(config: CrosshairConfig, c: number): Geometry {
+  const { style, size, thickness, gap } = config
+  const lines: Line[] = []
+  const circles: Circle[] = []
+
+  const addCross = (): void => {
+    lines.push([c, c - gap - size, c, c - gap])
+    lines.push([c, c + gap, c, c + gap + size])
+    lines.push([c - gap - size, c, c - gap, c])
+    lines.push([c + gap, c, c + gap + size, c])
   }
+
+  switch (style) {
+    case 'cross':
+      addCross()
+      break
+
+    case 'tcross':
+      lines.push([c, c + gap, c, c + gap + size])
+      lines.push([c - gap - size, c, c - gap, c])
+      lines.push([c + gap, c, c + gap + size, c])
+      break
+
+    case 'x': {
+      const g = gap * DIAG
+      const s = (gap + size) * DIAG
+      lines.push([c - s, c - s, c - g, c - g])
+      lines.push([c + g, c + g, c + s, c + s])
+      lines.push([c - s, c + s, c - g, c + g])
+      lines.push([c + g, c - g, c + s, c - s])
+      break
+    }
+
+    case 'chevron':
+      lines.push([c - size, c - gap + size, c, c - gap])
+      lines.push([c + size, c - gap + size, c, c - gap])
+      break
+
+    case 'dot':
+      circles.push({ cx: c, cy: c, r: size / 2, filled: true })
+      break
+
+    case 'circle':
+      circles.push({ cx: c, cy: c, r: size, filled: false })
+      break
+
+    case 'dot-circle':
+      circles.push({ cx: c, cy: c, r: size, filled: false })
+      circles.push({ cx: c, cy: c, r: thickness, filled: true })
+      break
+
+    case 'cross-dot':
+      addCross()
+      circles.push({ cx: c, cy: c, r: thickness, filled: true })
+      break
+  }
+
+  return { lines, circles }
+}
+
+export function Crosshair({ config }: CrosshairProps): JSX.Element {
+  const { color, opacity, outline, shadow, offset } = config
+  const c = BOX / 2
+  const { lines, circles } = geometry(config, c)
+  const outlineWidth = config.thickness + outline.width * 2
+
+  const filter = shadow.enabled
+    ? `drop-shadow(0 0 ${shadow.blur}px ${shadow.color})`
+    : undefined
 
   return (
     <svg
@@ -28,13 +99,14 @@ export function Crosshair({ config }: CrosshairProps): JSX.Element {
       style={{
         opacity,
         overflow: 'visible',
-        transform: `translate(${offset.x}px, ${offset.y}px)`
+        transform: `translate(${offset.x}px, ${offset.y}px)`,
+        filter
       }}
     >
       {outline.enabled &&
-        arms.map(([x1, y1, x2, y2], i) => (
+        lines.map(([x1, y1, x2, y2], i) => (
           <line
-            key={`outline-${i}`}
+            key={`outline-line-${i}`}
             x1={x1}
             y1={y1}
             x2={x2}
@@ -43,39 +115,48 @@ export function Crosshair({ config }: CrosshairProps): JSX.Element {
             strokeWidth={outlineWidth}
           />
         ))}
-      {arms.map(([x1, y1, x2, y2], i) => (
+      {outline.enabled &&
+        circles.map(({ cx, cy, r, filled }, i) =>
+          filled ? (
+            <circle key={`outline-circle-${i}`} cx={cx} cy={cy} r={r + outline.width} fill={outline.color} />
+          ) : (
+            <circle
+              key={`outline-circle-${i}`}
+              cx={cx}
+              cy={cy}
+              r={r}
+              fill="none"
+              stroke={outline.color}
+              strokeWidth={outlineWidth}
+            />
+          )
+        )}
+
+      {lines.map(([x1, y1, x2, y2], i) => (
         <line
-          key={`main-${i}`}
+          key={`line-${i}`}
           x1={x1}
           y1={y1}
           x2={x2}
           y2={y2}
           stroke={color}
-          strokeWidth={thickness}
+          strokeWidth={config.thickness}
         />
       ))}
-      {style === 'dot' && (
-        <>
-          {outline.enabled && (
-            <circle cx={c} cy={c} r={size / 2 + outline.width} fill={outline.color} />
-          )}
-          <circle cx={c} cy={c} r={size / 2} fill={color} />
-        </>
-      )}
-      {style === 'circle' && (
-        <>
-          {outline.enabled && (
-            <circle
-              cx={c}
-              cy={c}
-              r={size}
-              fill="none"
-              stroke={outline.color}
-              strokeWidth={outlineWidth}
-            />
-          )}
-          <circle cx={c} cy={c} r={size} fill="none" stroke={color} strokeWidth={thickness} />
-        </>
+      {circles.map(({ cx, cy, r, filled }, i) =>
+        filled ? (
+          <circle key={`circle-${i}`} cx={cx} cy={cy} r={r} fill={color} />
+        ) : (
+          <circle
+            key={`circle-${i}`}
+            cx={cx}
+            cy={cy}
+            r={r}
+            fill="none"
+            stroke={color}
+            strokeWidth={config.thickness}
+          />
+        )
       )}
     </svg>
   )
