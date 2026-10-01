@@ -30,56 +30,231 @@ body,
 .settings-root {
   box-sizing: border-box;
   height: 100%;
-  padding: 24px;
+  display: grid;
+  grid-template-columns: 1fr 380px;
   background: #12141a;
   color: #e6e8ee;
+  overflow: hidden;
+}
+
+.left-pane {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 16px;
+  min-width: 0;
+  overflow-y: auto;
+}
+
+.preview {
+  flex: 1;
+  min-height: 240px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 8px;
+  border: 1px solid #2c3040;
+}
+
+.preview-dark {
+  background: #1c1f28;
+}
+
+.preview-light {
+  background: #d8dae0;
+}
+
+.preview-checker {
+  background:
+    repeating-conic-gradient(#343845 0% 25%, #262a34 0% 50%) 0 0 / 20px 20px;
+}
+
+.preview-tools {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.preview-tools .spacer {
+  flex: 1;
+}
+
+button.tool {
+  background: #1c1f28;
+  color: #e6e8ee;
+  border: 1px solid #2c3040;
+  border-radius: 6px;
+  padding: 6px 12px;
+  font-size: 12px;
+  cursor: pointer;
+}
+
+button.tool:hover {
+  background: #262a36;
+}
+
+button.tool.active {
+  border-color: #4c8dff;
+  color: #9cc2ff;
+}
+
+button.tool.danger:hover {
+  border-color: #ff5555;
+  color: #ff8888;
+}
+
+.pane-title {
+  font-size: 13px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: #8a90a0;
+  margin: 8px 0 0;
+}
+
+.presets {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(88px, 1fr));
+  gap: 8px;
+}
+
+button.preset {
+  background: #1c1f28;
+  border: 1px solid #2c3040;
+  border-radius: 8px;
+  padding: 8px 4px 6px;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+}
+
+button.preset:hover {
+  background: #262a36;
+}
+
+.preset .thumb {
+  width: 52px;
+  height: 52px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+.preset .thumb svg {
+  transform: scale(0.26) !important;
+}
+
+.preset-name {
+  font-size: 11px;
+  color: #aeb4c2;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 84px;
+}
+
+.controls-pane {
+  border-left: 1px solid #232633;
+  overflow-y: auto;
+  padding: 16px;
   display: flex;
   flex-direction: column;
   gap: 12px;
 }
 
-.settings-root h1 {
-  font-size: 20px;
-  margin: 0;
-}
-
-.settings-root .hint {
-  color: #8a90a0;
-  font-size: 12px;
-  margin: 0;
-}
-
-.settings-root .preview {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  min-height: 120px;
+.section {
   background: #1c1f28;
   border-radius: 8px;
+  padding: 12px 14px;
 }
 
-.settings-root label {
+.section h2 {
+  margin: 0 0 10px;
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: #8a90a0;
+}
+
+.section-body {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.row {
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  gap: 12px;
+  gap: 10px;
   font-size: 13px;
 }
 
-.settings-root select,
-.settings-root input[type='color'] {
-  background: #1c1f28;
-  color: #e6e8ee;
+.row-label {
+  width: 96px;
+  flex-shrink: 0;
+  color: #c6cad6;
+}
+
+.row-value {
+  width: 42px;
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+  color: #8a90a0;
+}
+
+.row input[type='range'] {
+  flex: 1;
+  min-width: 0;
+}
+
+.row input[type='color'] {
+  width: 42px;
+  height: 26px;
+  padding: 2px;
+  background: #12141a;
   border: 1px solid #2c3040;
   border-radius: 4px;
-  padding: 4px 8px;
+  cursor: pointer;
 }
 
-.settings-root input[type='range'] {
-  flex: 1;
-  max-width: 300px;
+.row.checkbox {
+  justify-content: space-between;
 }
 
-.settings-root label.checkbox {
-  justify-content: flex-start;
+.style-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 8px;
+}
+
+.thumb {
+  width: 100%;
+  aspect-ratio: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+button.thumb {
+  background: #12141a;
+  border: 1px solid #2c3040;
+  border-radius: 8px;
+  cursor: pointer;
+  padding: 0;
+}
+
+button.thumb:hover {
+  background: #191c26;
+}
+
+button.thumb.active {
+  border-color: #4c8dff;
+  box-shadow: 0 0 0 1px #4c8dff inset;
+}
+
+.style-thumb svg {
+  transform: scale(0.3) !important;
 }

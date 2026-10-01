@@ -61,8 +61,8 @@ function createOverlayWindow(): void {
 
 function createSettingsWindow(): void {
   settingsWindow = new BrowserWindow({
-    width: 720,
-    height: 640,
+    width: 940,
+    height: 700,
     show: false,
     autoHideMenuBar: true,
     title: 'Crosshair Overlay — Settings',
