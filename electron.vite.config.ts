@@ -11,6 +11,9 @@ export default defineConfig({
   },
   renderer: {
     plugins: [react()],
+    server: {
+      host: '127.0.0.1'
+    },
     resolve: {
       alias: {
         '@shared': resolve(__dirname, 'src/shared'),
