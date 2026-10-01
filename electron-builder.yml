@@ -1,0 +1,11 @@
+appId: com.kommo124.crosshair-overlay
+productName: Crosshair Overlay
+directories:
+  output: release
+  buildResources: build
+files:
+  - out/**
+win:
+  target:
+    - nsis
+    - portable
